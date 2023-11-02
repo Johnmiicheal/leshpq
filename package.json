@@ -1,28 +1,23 @@
 {
   "name": "leshpq",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Past Question Repository",
+  "main": "main.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnmiicheal/leshpq.git"
+  },
+  "author": "Le Shaw",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/johnmiicheal/leshpq/issues"
+  },
+  "homepage": "https://github.com/johnmiicheal/leshpq#readme",
   "dependencies": {
-    "@chakra-ui/react": "^2.8.1",
-    "date-fns": "^2.30.0",
-    "formik": "^2.4.5",
-    "framer-motion": "^10.16.4",
-    "next": "13.5.6",
-    "react": "^18",
-    "react-dom": "^18"
-  },
-  "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "13.5.6"
+    "electron": "^27.0.3"
   }
 }
