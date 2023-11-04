@@ -1,0 +1,12 @@
+appId: com.example.leshpq
+productName: Leshpq
+copyright: Copyright © 2023 Le Shaw
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null
