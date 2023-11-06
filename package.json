@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "my-nextron-app",
-  "description": "My application description",
+  "name": "lesh-pq",
+  "description": "Lesh's past question repository",
   "version": "1.0.0",
-  "author": "Ketan Patel <ktan.p.patel@gmail.com>",
+  "author": "Johnmiicheal <michealelijah301@gmail.com>",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",

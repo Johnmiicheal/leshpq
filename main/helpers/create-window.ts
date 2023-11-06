@@ -1,9 +1,9 @@
 import {
   screen,
   BrowserWindow,
-  BrowserWindowConstructorOptions,
-  Rectangle,
 } from 'electron'
+import { BrowserWindowConstructorOptions } from 'electron/renderer';
+import { Rectangle } from 'electron/main';
 import Store from 'electron-store'
 
 export const createWindow = (
@@ -73,9 +73,11 @@ export const createWindow = (
   const win = new BrowserWindow({
     ...state,
     ...options,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      devTools: false,
       ...options.webPreferences,
     },
   })

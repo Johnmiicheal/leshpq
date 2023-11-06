@@ -15,7 +15,7 @@ export default function HomePage() {
       <Head>
         <title>Home - Leshpq</title>
       </Head>
-      <Container minHeight="90vh" mt={5}>
+      <Container mt="15%" overflow="hidden">
         <DarkModeSwitch />
         <Image
           src="/leshlogo.png"

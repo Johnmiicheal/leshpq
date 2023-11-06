@@ -8,13 +8,13 @@ import { DarkModeSwitch } from '../components/DarkModeSwitch'
 import { Footer } from '../components/Footer'
 import { Hero } from '../components/Hero'
 
-export default function NextPage() {
+export default function SearchPage() {
   return (
     <React.Fragment>
       <Head>
-        <title>Next - Nextron (with-chakra-ui)</title>
+        <title>Search - Lesh Past Questions</title>
       </Head>
-      <Container minHeight="100vh">
+      <Container minHeight="90vh">
         <DarkModeSwitch />
         <Image
           src="/images/logo.png"
@@ -22,7 +22,7 @@ export default function NextPage() {
           width="200px"
           height="200px"
         />
-        <Hero title={`⚡ Nextron ⚡`} />
+        <Hero title={`Search for questions`} />
         <Footer>
           <Button
             as={ChakraLink}

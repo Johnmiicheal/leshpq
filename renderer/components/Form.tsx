@@ -1,6 +1,6 @@
 'use client'
-
-import { Center, Heading, Link } from '@chakra-ui/react'
+import { useState } from 'react'
+import { Center, Heading } from '@chakra-ui/react'
 import {
   Button,
   FormControl,
@@ -12,9 +12,36 @@ import {
 } from '@chakra-ui/react'
 import { PinInput, PinInputField } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
+import { Notification } from 'electron'
 
 export default function LoginForm() {
-    const router = useRouter();
+  const router = useRouter();
+  const initialPinValues = ['', '', '', '', '', ''];
+  const [pinValues, setPinValues] = useState(initialPinValues);
+  const [loading, setLoading] = useState(false);
+
+  // Function to handle changes in PinInputFields
+  const handlePinInputChange = (index, value) => {
+    const newPinValues = [...pinValues];
+    newPinValues[index] = value;
+    setPinValues(newPinValues);
+  };
+
+  const handleSubmit = () => {
+    const notification = new Notification({
+      title: 'My App Notification',
+      body: 'This is a notification from your Electron app!',
+      icon: 'path/to/icon.png',
+      silent: false, // Set to true to mute the notification sound
+    });
+    notification.show();
+    setLoading(true)
+    router.push('/search')
+  }
+
+  // Determine whether all PinInputFields are filled
+  const isButtonDisabled = pinValues.some(value => value === '');
+
   return (
     <Flex
       align={'center'}
@@ -30,7 +57,8 @@ export default function LoginForm() {
         rounded={'xl'}
         border="1px solid #d4d4d4"
         p={6}
-        my={10}>
+        my={10}
+        >
         <Center>
           <Heading color="#747474" lineHeight={1.1} fontSize={{ base: '1xl', md: '2xl' }} fontWeight={500}>
             Enter the code
@@ -38,24 +66,23 @@ export default function LoginForm() {
         </Center>
         <FormControl>
           <Center>
-            <HStack>
-              <PinInput>
-                <PinInputField />
-                <PinInputField />
-                <PinInputField />
-                <PinInputField />
-                <PinInputField />
-                <PinInputField />
-              </PinInput>
-            </HStack>
+          <HStack>
+            <PinInput>
+              {pinValues.map((value, index) => (
+                <PinInputField key={index} value={value} onChange={(e) => handlePinInputChange(index, e.target.value)} />
+              ))}
+            </PinInput>
+          </HStack>
           </Center>
         </FormControl>
         <Stack spacing={6}>
           <Button
-            onClick={() => router.push('/next')}
+            onClick={handleSubmit}
+            isLoading={loading}
             textDecoration={"none"}
             bg={'blue.400'}
             color={'white'}
+            isDisabled={isButtonDisabled}
             _hover={{
               bg: 'blue.500',
             }}>
