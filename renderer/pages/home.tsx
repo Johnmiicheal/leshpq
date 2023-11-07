@@ -1,7 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
-import Image from 'next/image'
-import { useColorModeValue } from '@chakra-ui/react'
+// import Image from 'next/image'
+import { Flex, Image } from '@chakra-ui/react'
 
 import { Container } from '../components/Container'
 import { DarkModeSwitch } from '../components/DarkModeSwitch'
@@ -15,16 +15,19 @@ export default function HomePage() {
       <Head>
         <title>Home - Leshpq</title>
       </Head>
-      <Container mt="15%" overflow="hidden">
+      <Container h="100vh" overflow="hidden">
         <DarkModeSwitch />
-        <Image
-          src="/leshlogo.png"
-          alt="Logo image"
-          width="100px"
-          height="100px"
-        />
-        <Hero title={`Lesh Past Questions`} />
-        <LoginForm />
+        <Flex direction="column" align="center" justify="center" h="full">
+          <Image          
+            src="/leshlogo.png"
+            alt="Logo image"
+            width="100px"
+            height="100px"
+          />
+          <Hero title={`Lesh Question Bank`} />
+          <LoginForm />
+
+        </Flex>
         <Footer>
         
         </Footer>

@@ -12,7 +12,6 @@ import {
 } from '@chakra-ui/react'
 import { PinInput, PinInputField } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { Notification } from 'electron'
 
 export default function LoginForm() {
   const router = useRouter();
@@ -28,13 +27,7 @@ export default function LoginForm() {
   };
 
   const handleSubmit = () => {
-    const notification = new Notification({
-      title: 'My App Notification',
-      body: 'This is a notification from your Electron app!',
-      icon: 'path/to/icon.png',
-      silent: false, // Set to true to mute the notification sound
-    });
-    notification.show();
+    console.log(pinValues)
     setLoading(true)
     router.push('/search')
   }
