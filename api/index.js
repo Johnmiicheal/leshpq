@@ -19,17 +19,36 @@ const db = new sqlite3.Database(dbPath);
 // Create a table for pins if it doesn't exist
 db.serialize(() => {
 	db.run(
-		"CREATE TABLE IF NOT EXISTS pins (id INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT)"
+		"CREATE TABLE IF NOT EXISTS pin (id INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT)"
 	);
 
-	// Add a default PIN from .env to the database
-	const defaultPin = process.env.DEFAULT_PIN || "123457";
-	db.run("INSERT OR IGNORE INTO pins (value) VALUES (?)", [defaultPin]);
+	// Check if there are no records in the 'pins' table
+	db.get("SELECT COUNT(*) AS count FROM pin", (err, result) => {
+		if (err) {
+			console.error("Error checking for existing pins:", err);
+			return;
+		}
+
+		if (result.count === 0) {
+			// Add a default PIN from .env to the database only if the table is empty
+			const defaultPin = process.env.DEFAULT_PIN || "123457";
+			db.run(
+				"INSERT INTO pin (value) VALUES (?)",
+				[defaultPin],
+				(insertErr) => {
+					if (insertErr) {
+						console.error("Error inserting default PIN:", insertErr);
+					} else {
+						console.log("Default PIN inserted successfully");
+					}
+				}
+			);
+		}
+	});
 });
 
 app.post("/auth/pin", (req, res) => {
 	const { pinValues } = req.body;
-	console.log(pinValues);
 
 	// Convert the array of digits to a single string PIN
 	const pin = pinValues.join("");
@@ -44,7 +63,7 @@ app.post("/auth/pin", (req, res) => {
 			// PIN exists, proceed to the search page
 			res.json({ message: "PIN matched. Redirecting to the search page" });
 		} else {
-			// PIN doesn't exist, return an error or add a default PIN
+			// PIN doesn't exist, return an error
 			res.status(401).json({ error: "Invalid PIN" });
 		}
 	});
