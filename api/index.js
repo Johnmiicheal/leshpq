@@ -54,16 +54,14 @@ app.post("/auth/pin", (req, res) => {
 	const pin = pinValues.join("");
 
 	// Check if the entered PIN exists in the database
-	db.get("SELECT * FROM pins WHERE value = ?", [pin], (err, row) => {
+	db.get("SELECT * FROM pin WHERE value = ?", [pin], (err, row) => {
 		if (err) {
 			return res.status(500).json({ error: "Error querying the database" });
 		}
 
 		if (row) {
-			// PIN exists, proceed to the search page
 			res.json({ message: "PIN matched. Redirecting to the search page" });
 		} else {
-			// PIN doesn't exist, return an error
 			res.status(401).json({ error: "Invalid PIN" });
 		}
 	});
