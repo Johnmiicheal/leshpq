@@ -34,16 +34,34 @@ app.post("/auth/pin", (req, res) => {
 app.get("/search", (req, res) => {
 	const { query } = req.query;
 
-	if (!query) {
-		return res.status(400).json({ error: "Missing search query" });
+	// Check if the search query is at least 3 characters long
+	if (!query || query.length < 3) {
+		return res
+			.status(400)
+			.json({ error: "Search query must be at least 3 characters long" });
 	}
 
 	const searchQuery = `%${query}%`;
 
-	// Use LIKE clause for a basic search
+	// Use LIKE clause for a basic search on multiple fields
 	db.all(
-		"SELECT * FROM questions WHERE question LIKE ? OR answer LIKE ? OR type LIKE ? OR options LIKE ? OR tags LIKE ?",
-		[searchQuery, searchQuery, searchQuery, searchQuery, searchQuery],
+		"SELECT * FROM questions WHERE " +
+			"question LIKE ? OR " +
+			"answer LIKE ? OR " +
+			"type LIKE ? OR " +
+			"topic LIKE ? OR " +
+			"contributor LIKE ? OR " +
+			"options LIKE ? OR " +
+			"tags LIKE ?",
+		[
+			searchQuery,
+			searchQuery,
+			searchQuery,
+			searchQuery,
+			searchQuery,
+			searchQuery,
+			searchQuery,
+		],
 		(err, rows) => {
 			if (err) {
 				return res.status(500).json({ error: "Error querying the database" });
@@ -55,9 +73,11 @@ app.get("/search", (req, res) => {
 					question: row.question,
 					answer: row.answer,
 					type: row.type,
+					topic: row.topic,
+					contributor: row.contributor,
 					options: JSON.parse(row.options || "[]"), // Parse JSON string to array
 					tags: JSON.parse(row.tags || "[]"), // Parse JSON string to array
-					date_created: row.date_created,
+					date_added: row.date_added,
 				};
 			});
 
@@ -68,7 +88,8 @@ app.get("/search", (req, res) => {
 
 // API endpoint for adding a new question
 app.post("/question/add", (req, res) => {
-	const { question, answer, type, options, tags } = req.body;
+	const { question, answer, type, topic, contributor, options, tags } =
+		req.body;
 
 	if (!question || !answer || !type) {
 		return res.status(400).json({ error: "Missing required fields" });
@@ -78,8 +99,8 @@ app.post("/question/add", (req, res) => {
 	const tagsString = JSON.stringify(tags || []);
 
 	db.run(
-		"INSERT INTO questions (question, answer, type, options, tags) VALUES (?, ?, ?, ?, ?)",
-		[question, answer, type, optionsString, tagsString],
+		"INSERT INTO questions (question, answer, type, topic, contributor, options, tags) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		[question, answer, type, topic, contributor, optionsString, tagsString],
 		function (err) {
 			if (err) {
 				return res

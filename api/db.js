@@ -46,9 +46,11 @@ db.serialize(() => {
       question TEXT,
       answer TEXT,
       type TEXT,
+      topic TEXT,
+      contributor TEXT,
       options TEXT, -- Stored as JSON string, can be parsed in code
       tags TEXT, -- Stored as JSON string, can be parsed in code
-      date_created DATETIME DEFAULT CURRENT_TIMESTAMP
+      date_added DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
 });
