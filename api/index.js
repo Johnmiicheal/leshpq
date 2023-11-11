@@ -1,51 +1,14 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
-const dotenv = require("dotenv");
-
-dotenv.config();
+const dotenv = require("dotenv").config();
+const db = require("./db");
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 app.use(cors());
-
-// Initialize SQLite database
-const dbPath = path.join(__dirname, "leshpq.db");
-const db = new sqlite3.Database(dbPath);
-
-// Create a table for pins if it doesn't exist
-db.serialize(() => {
-	db.run(
-		"CREATE TABLE IF NOT EXISTS pin (id INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT)"
-	);
-
-	// Check if there are no records in the 'pins' table
-	db.get("SELECT COUNT(*) AS count FROM pin", (err, result) => {
-		if (err) {
-			console.error("Error checking for existing pins:", err);
-			return;
-		}
-
-		if (result.count === 0) {
-			// Add a default PIN from .env to the database only if the table is empty
-			const defaultPin = process.env.DEFAULT_PIN || "123457";
-			db.run(
-				"INSERT INTO pin (value) VALUES (?)",
-				[defaultPin],
-				(insertErr) => {
-					if (insertErr) {
-						console.error("Error inserting default PIN:", insertErr);
-					} else {
-						console.log("Default PIN inserted successfully");
-					}
-				}
-			);
-		}
-	});
-});
 
 app.post("/auth/pin", (req, res) => {
 	const { pinValues } = req.body;
@@ -65,6 +28,68 @@ app.post("/auth/pin", (req, res) => {
 			res.status(401).json({ error: "Invalid PIN" });
 		}
 	});
+});
+
+// API endpoint for searching questions
+app.get("/search", (req, res) => {
+	const { query } = req.query;
+
+	if (!query) {
+		return res.status(400).json({ error: "Missing search query" });
+	}
+
+	const searchQuery = `%${query}%`;
+
+	// Use LIKE clause for a basic search
+	db.all(
+		"SELECT * FROM questions WHERE question LIKE ? OR answer LIKE ? OR type LIKE ? OR options LIKE ? OR tags LIKE ?",
+		[searchQuery, searchQuery, searchQuery, searchQuery, searchQuery],
+		(err, rows) => {
+			if (err) {
+				return res.status(500).json({ error: "Error querying the database" });
+			}
+
+			const results = rows.map((row) => {
+				return {
+					id: row.id,
+					question: row.question,
+					answer: row.answer,
+					type: row.type,
+					options: JSON.parse(row.options || "[]"), // Parse JSON string to array
+					tags: JSON.parse(row.tags || "[]"), // Parse JSON string to array
+					date_created: row.date_created,
+				};
+			});
+
+			res.json({ results });
+		}
+	);
+});
+
+// API endpoint for adding a new question
+app.post("/question/add", (req, res) => {
+	const { question, answer, type, options, tags } = req.body;
+
+	if (!question || !answer || !type) {
+		return res.status(400).json({ error: "Missing required fields" });
+	}
+
+	const optionsString = JSON.stringify(options || []);
+	const tagsString = JSON.stringify(tags || []);
+
+	db.run(
+		"INSERT INTO questions (question, answer, type, options, tags) VALUES (?, ?, ?, ?, ?)",
+		[question, answer, type, optionsString, tagsString],
+		function (err) {
+			if (err) {
+				return res
+					.status(500)
+					.json({ error: "Error inserting into the database" });
+			}
+
+			res.json({ id: this.lastID });
+		}
+	);
 });
 
 app.listen(port, () => {
